@@ -1,5 +1,5 @@
 FROM ubuntu:xenial
-MAINTAINER Christian Lück <christian@lueck.tv>
+MAINTAINER Anthony Prades <toony.github@chezouam.net>
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php-fpm php-cli php-curl php-gd php-json \
