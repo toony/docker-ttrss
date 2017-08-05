@@ -117,16 +117,21 @@ if( $urlParts['path'] != '' && $urlParts['path'] != '/' ) {
         rewrite ^ ' . $config['SELF_URL_PATH'] . ';
     }
 
-    location ' . rtrim($urlParts['path'], '/') . ' {
-        alias /var/www;
+    location ' . rtrim($urlParts['path'], '/') . '/ {
+        alias /var/www/;
         try_files $uri $uri/ =404;
 
-        location ~ \.php$ {
-            allow all;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
+        location ~ ^' . rtrim($urlParts['path'], '/') . '/(.+\.php)(.*)$ {
+            fastcgi_split_path_info ^' . rtrim($urlParts['path'], '/') . '/(.+\.php)(.*)$;
+
+            try_files $fastcgi_script_name =404;
+            set $path_info $fastcgi_path_info;
+            fastcgi_param PATH_INFO $path_info;
+
             fastcgi_index index.php;
-            include fastcgi_params;
+            include fastcgi.conf;
+
+            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
         }
     }
 }';
