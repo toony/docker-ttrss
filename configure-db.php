@@ -6,7 +6,10 @@ $confpath = '/var/www/config.php';
 $config = array();
 
 // path to ttrss
-$config['SELF_URL_PATH'] = env('SELF_URL_PATH', 'http://localhost');
+$config['SELF_URL_PATH'] = env('SELF_URL_PATH', 'http://localhost/');
+if( substr($config['SELF_URL_PATH'], -1) != '/' ) {
+    $config['SELF_URL_PATH'] .= '/';
+}
 
 if (getenv('DB_TYPE') !== false) {
     $config['DB_TYPE'] = getenv('DB_TYPE');
@@ -106,38 +109,26 @@ foreach ($config as $name => $value) {
 }
 file_put_contents($confpath, $contents);
 
+
 $urlParts = parse_url($config['SELF_URL_PATH']);
-if( $urlParts['path'] != '' && $urlParts['path'] != '/' ) {
-    $nginx = 'server {
-    listen 80;
-
-    index index.php index.html;
+if( !array_key_exists('path', $urlParts) || $urlParts['path'] == '' ) {
+    $ttrssPath = '/';
+}else {
+    $ttrssPath = $urlParts['path'];
     
-    location / {
-        rewrite ^ ' . $config['SELF_URL_PATH'] . ';
+    if( substr($ttrssPath, -1) != '/' ) {
+        $ttrssPath .= '/';
     }
-
-    location ' . rtrim($urlParts['path'], '/') . '/ {
-        alias /var/www/;
-        try_files $uri $uri/ =404;
-
-        location ~ ^' . rtrim($urlParts['path'], '/') . '/(.+\.php)(.*)$ {
-            fastcgi_split_path_info ^' . rtrim($urlParts['path'], '/') . '/(.+\.php)(.*)$;
-
-            try_files $fastcgi_script_name =404;
-            set $path_info $fastcgi_path_info;
-            fastcgi_param PATH_INFO $path_info;
-
-            fastcgi_index index.php;
-            include fastcgi.conf;
-
-            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-        }
-    }
-}';
-
-    file_put_contents("/etc/nginx/sites-enabled/ttrss", $nginx);
 }
+
+$nginx = file_get_contents("/etc/nginx/sites-enabled/ttrss");
+if( $ttrssPath == '/' ) {
+    $nginx = preg_replace('/#BEGIN_NOT_IN_SLASH.+#END_NOT_IN_SLASH/', '', $nginx);
+}
+$nginx = str_replace('##SELF_URL_PATH##', $config['SELF_URL_PATH'], $nginx);
+$nginx = str_replace('##TTRSS_PATH##', $ttrssPath, $nginx);
+file_put_contents("/etc/nginx/sites-enabled/ttrss", $nginx);
+
 
 function env($name, $default = null)
 {
