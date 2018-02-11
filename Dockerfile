@@ -5,6 +5,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php-fpm php-cli php-curl php-gd php-json \
   php-pgsql php-mysql php-mcrypt php-xml php-mbstring curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# enable www-data shell
+RUN usermod -s /bin/bash www-data
+
 # enable the mcrypt module
 RUN phpenmod mcrypt
 
