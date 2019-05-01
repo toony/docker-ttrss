@@ -15,7 +15,7 @@ RUN rm /etc/nginx/sites-enabled/default
 
 # install ttrss and patch configuration
 WORKDIR /var/www
-RUN curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
+RUN curl -SL https://git.tt-rss.org/git/tt-rss/archive/19.2.tar.gz | tar xzC /var/www --strip-components 1 \
     && apt-get purge -y --auto-remove curl \
     && chown www-data:www-data -R /var/www
 RUN cp config.php-dist config.php
