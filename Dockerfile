@@ -3,7 +3,7 @@ MAINTAINER Anthony Prades <toony.github@chezouam.net>
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php-fpm php-cli php-curl php-gd php-json \
-  php-pgsql php-mysql php-mcrypt php-xml php-mbstring curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+  php-pgsql php-mysql php-mcrypt php-xml php-mbstring php-intl curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # enable the mcrypt module
 RUN phpenmod mcrypt
