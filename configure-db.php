@@ -129,6 +129,17 @@ $nginx = str_replace('##SELF_URL_PATH##', $config['SELF_URL_PATH'], $nginx);
 $nginx = str_replace('##TTRSS_PATH##', $ttrssPath, $nginx);
 file_put_contents("/etc/nginx/sites-enabled/ttrss", $nginx);
 
+$ttrssconfig = "<?php
+        putenv('TTRSS_DB_TYPE=mysql');
+        putenv('TTRSS_DB_HOST=" . $config['DB_HOST'] . "');
+        putenv('TTRSS_DB_PORT=3306');
+        putenv('TTRSS_DB_USER=" . $config['DB_USER'] . "');
+        putenv('TTRSS_DB_PASS=" . $config['DB_PASS'] . "');
+        putenv('TTRSS_DB_NAME=" . $config['DB_NAME'] ."');
+        putenv('TTRSS_SELF_URL_PATH=" . $config['SELF_URL_PATH'] . "');
+";
+file_put_contents("/var/www/config.php", $ttrssconfig);
+
 
 function env($name, $default = null)
 {

@@ -1,12 +1,9 @@
-FROM ubuntu:xenial
+FROM ubuntu:focal
 MAINTAINER Anthony Prades <toony.github@chezouam.net>
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   nginx supervisor php-fpm php-cli php-curl php-gd php-json \
-  php-pgsql php-mysql php-mcrypt php-xml php-mbstring php-intl curl && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# enable the mcrypt module
-RUN phpenmod mcrypt
+  php-pgsql php-mysql php-opcache php-xml php-mbstring php-intl curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # add ttrss as the only nginx site
 ADD ttrss.nginx.conf /etc/nginx/sites-available/ttrss
@@ -19,7 +16,7 @@ RUN curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /
     && apt-get purge -y --auto-remove curl \
     && chown www-data:www-data -R /var/www
 RUN cp config.php-dist config.php
-RUN mkdir /run/php
+RUN mkdir -p /run/php
 
 # expose only nginx HTTP port
 EXPOSE 80
